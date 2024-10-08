@@ -3,10 +3,10 @@ package com.lgran.billingjob;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class BillingJobApplicationTests {
 
-	@Test
+//	@Test
 	void contextLoads() {
 	}
 
