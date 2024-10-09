@@ -26,4 +26,19 @@ public class BillingJob implements Job {
     execution.setExitStatus(ExitStatus.COMPLETED);
     jobRepository.update(execution);
   }
+
+//  @Override
+//  public void execute(JobExecution execution) {
+//    try {
+//      throw new Exception("Unable to process billing information");
+//    } catch (Exception exception) {
+//      execution.addFailureException(exception);
+//      execution.setStatus(BatchStatus.COMPLETED);
+//      execution.setExitStatus(ExitStatus.FAILED.addExitDescription(exception.getMessage()));
+//    } finally {
+//      this.jobRepository.update(execution);
+//    }
+//  }
+
+
 }
