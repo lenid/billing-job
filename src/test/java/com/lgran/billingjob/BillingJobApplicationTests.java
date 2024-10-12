@@ -1,6 +1,7 @@
 package com.lgran.billingjob;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
@@ -51,7 +52,12 @@ class BillingJobApplicationTests {
 
 		// then
 		Assertions.assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+
 		Assertions.assertTrue(Files.exists(Paths.get("staging", "billing-2023-01.csv")));
 		Assertions.assertEquals(9, JdbcTestUtils.countRowsInTable(jdbcTemplate, "BILLING_DATA"));
+
+		Path billingReport = Paths.get("staging", "billing-report-2023-01.csv");
+		Assertions.assertTrue(Files.exists(billingReport));
+		Assertions.assertEquals(5, Files.lines(billingReport).count());
 	}
 }
