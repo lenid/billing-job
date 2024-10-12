@@ -1,5 +1,7 @@
 package com.lgran.billingjob.config;
 
+import java.nio.file.Paths;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -66,7 +68,7 @@ public class BillingJobConfiguration {
   public FlatFileItemReader<BillingData> billingDataFileReader(@Value("#{jobParameters['input.file']}") String inputFile) {
     return new FlatFileItemReaderBuilder<BillingData>()
       .name("billingDataFileReader")
-      .resource(new FileSystemResource(inputFile))
+      .resource(new FileSystemResource(Paths.get("staging", Paths.get(inputFile).toFile().getName())))
       .delimited()
       .names("dataYear", "dataMonth", "accountId", "phoneNumber", "dataUsage", "callDuration", "smsCount")
       .targetType(BillingData.class)
