@@ -1,6 +1,8 @@
 # billing-job
 
 # Run PostgeSQL
+Create database with name db and add grants to user
+
 # Create tables
 
 CREATE TABLE BATCH_JOB_INSTANCE  (
