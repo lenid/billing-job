@@ -1,12 +1,18 @@
 package com.lgran.billingjob;
 
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.lgran.billingjob.model.BillingData;
 import com.lgran.billingjob.model.ReportingData;
 
+@Service
 public class BillingDataProcessor implements ItemProcessor<BillingData, ReportingData> {
+
+  @Autowired
+  private PricingService pricingService;
 
   @Value("${spring.cellular.pricing.data:0.9}")
   private float dataPricing;
@@ -22,6 +28,8 @@ public class BillingDataProcessor implements ItemProcessor<BillingData, Reportin
 
   @Override
   public ReportingData process(BillingData item) {
+    pricingService.generateTransientException();
+
     double billingTotal = item.dataUsage() * dataPricing + item.callDuration() * callPricing + item.smsCount() * smsPricing;
     if (billingTotal < spendingThreshold) {
       return null;

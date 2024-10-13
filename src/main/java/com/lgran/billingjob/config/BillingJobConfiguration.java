@@ -29,8 +29,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 
-import com.lgran.billingjob.BillingDataProcessor;
+import com.lgran.billingjob.BillingDataRetryListener;
 import com.lgran.billingjob.BillingDataSkipListener;
+import com.lgran.billingjob.PricingException;
 import com.lgran.billingjob.model.BillingData;
 import com.lgran.billingjob.model.ReportingData;
 import com.lgran.billingjob.tacklet.FilePreparationTasklet;
@@ -108,11 +109,6 @@ public class BillingJobConfiguration {
   }
 
   @Bean
-  public BillingDataProcessor billingDataProcessor() {
-    return new BillingDataProcessor();
-  }
-
-  @Bean
   @StepScope
   public FlatFileItemWriter<ReportingData> billingDataFileWriter(@Value("#{jobParameters['output.file']}") String outputFile) {
     return new FlatFileItemWriterBuilder<ReportingData>()
@@ -126,12 +122,16 @@ public class BillingJobConfiguration {
   @Bean
   public Step step3(JobRepository jobRepository, JdbcTransactionManager transactionManager,
     ItemReader<BillingData> billingDataTableReader, ItemProcessor<BillingData, ReportingData> billingDataProcessor,
-    ItemWriter<ReportingData> billingDataFileWriter) {
+    ItemWriter<ReportingData> billingDataFileWriter, BillingDataRetryListener retryListener) {
     return new StepBuilder("reportGeneration", jobRepository)
       .<BillingData, ReportingData>chunk(100, transactionManager)
       .reader(billingDataTableReader)
       .processor(billingDataProcessor)
       .writer(billingDataFileWriter)
+      .faultTolerant()
+      .retry(PricingException.class)
+      .retryLimit(100)
+      .listener(retryListener)
       .build();
   }
 
